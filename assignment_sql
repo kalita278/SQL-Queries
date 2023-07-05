@@ -1,0 +1,84 @@
+CREATE TABLE tab1 (
+ Cust_ID int,
+ContactDate DATE,
+ContactType VARCHAR(5)
+);
+CREATE TABLE tab2 (
+Cust_ID int,
+OrderNum BIGINT,
+OrderDate DATE,
+Value float,
+Gift varchar(5),
+RecipNum BIGINT
+);
+CREATE TABLE tab3 (
+Cust_ID int,
+OrderNum BIGINT,
+OrderDate DATE,
+OrderMethod varchar(5),
+PaymentType varchar(5)
+);
+CREATE TABLE tab4(
+Cust_ID int,
+area_code int,
+FirstYYMM date,
+FirstChannel varchar(5),
+FirstDollar int,
+StoreDist float,
+Email varchar(5),
+Age int
+);
+COPY tab1 FROM 'D:\Users\dell1\Desktop\SQL_test\tab1.csv' DELIMITER ',' CSV HEADER;
+COPY tab2 FROM 'D:\Users\dell1\Desktop\SQL_test\tab2.csv' DELIMITER ',' CSV HEADER;
+COPY tab3 FROM 'D:\Users\dell1\Desktop\SQL_test\tab3.csv' DELIMITER ',' CSV HEADER;
+COPY tab4 FROM 'D:\Users\dell1\Desktop\SQL_test\tab4.csv' DELIMITER ',' CSV HEADER;
+
+select * from tab1 limit 5;
+select * from tab2 limit 5;
+select * from tab3 limit 5;
+select * from tab4 limit 5;
+ 
+ 
+ select tab2.Cust_ID, tab4.area_code, avg(tab2.Value), extract(year from tab2.OrderDate) as Date from tab2
+ inner join tab4
+ on tab2.Cust_ID = tab4.Cust_ID
+ where extract(year from tab2.OrderDate) = 2007
+ group by tab2.Cust_ID, extract(year from tab2.OrderDate),tab4.area_code
+ order by avg(tab2.Value) DESC
+ limit 5;
+ 
+ 
+ select tab4.FirstChannel, count(tab2.OrderNum), tab2.Gift from tab2
+ inner join tab4
+ on tab2.Cust_ID = tab4.Cust_ID
+ where tab2.Gift = 'Y'
+ group by tab4.FirstChannel, tab2.Gift;
+ 
+
+select tab2.Cust_ID, avg(tab2.Value), count(tab2.OrderNum)
+from tab2
+inner join tab4
+on tab2.Cust_ID = tab4.Cust_ID
+where (tab4.age between 21 and 31) and (tab4.StoreDist <10)
+group by tab2.Cust_ID;
+
+
+
+select tab2.Cust_ID, sum(tab2.Value), tab3.PaymentType, tab4.FirstChannel from tab2
+inner join tab3
+on tab2.Cust_ID = tab3.Cust_ID
+inner join tab4
+on tab3.Cust_ID = tab4.Cust_ID
+where tab3.PaymentType = 'CA' and tab4.FirstChannel = 'Cat'
+group by tab2.Cust_ID, tab3.PaymentType, tab4.FirstChannel;
+
+
+select tab2.Cust_ID, avg(tab2.Value) from tab2
+inner join tab4
+on tab2.Cust_ID = tab4.Cust_ID
+where tab4.FirstChannel is not null
+group by tab2.Cust_ID;
+
+
+
+
